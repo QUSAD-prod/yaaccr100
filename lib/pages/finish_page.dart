@@ -34,6 +34,7 @@ class _FinishPageState extends State<FinishPage> {
   String name = "";
   String email = "";
   bool isValid = false;
+  bool buttonActive = true;
 
   final ScrollController _scrollController = ScrollController();
 
@@ -42,12 +43,20 @@ class _FinishPageState extends State<FinishPage> {
     super.initState();
 
     _nameController.addListener(
-      () => name = _nameController.text,
+      () => setState(
+        () => {
+          name = _nameController.text,
+        },
+      ),
     );
     _emailController.addListener(
       () => {
-        email = _emailController.text,
-        isValid = EmailValidator.validate(email),
+        setState(
+          () => {
+            email = _emailController.text,
+            isValid = EmailValidator.validate(email),
+          },
+        ),
       },
     );
 
@@ -283,7 +292,10 @@ class _FinishPageState extends State<FinishPage> {
                       Container(
                         margin: EdgeInsets.only(top: height * 0.05),
                         decoration: BoxDecoration(
-                          color: name != "" && email != "" && isValid
+                          color: name != "" &&
+                                  email != "" &&
+                                  isValid &&
+                                  buttonActive
                               ? const Color(0xFF14A75D)
                               : const Color(0xFF127D79),
                           borderRadius: BorderRadius.circular(100),
@@ -303,7 +315,10 @@ class _FinishPageState extends State<FinishPage> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: name != "" && email != "" && isValid
+                            onTap: name != "" &&
+                                    email != "" &&
+                                    isValid &&
+                                    buttonActive
                                 ? () => send()
                                 : null,
                             borderRadius: BorderRadius.circular(100),
@@ -318,7 +333,10 @@ class _FinishPageState extends State<FinishPage> {
                                 child: Text(
                                   "Получить сертификат",
                                   style: TextStyle(
-                                    color: name != "" && email != "" && isValid
+                                    color: name != "" &&
+                                            email != "" &&
+                                            isValid &&
+                                            buttonActive
                                         ? Colors.white
                                         : const Color(0xFF88A9C9),
                                     fontWeight: FontWeight.w700,
@@ -499,6 +517,10 @@ class _FinishPageState extends State<FinishPage> {
   }
 
   void send() async {
+    setState(() {
+      buttonActive = false;
+    });
+
     DateTime date = DateTime.now();
 
     DatabaseReference ref = FirebaseDatabase.instance.ref().child(
@@ -533,14 +555,6 @@ class _FinishPageState extends State<FinishPage> {
 
     switch (result) {
       case 'success':
-        showSnackBar(
-          context: context,
-          text: "Запрос на сертификат успешно отправлен",
-          icon: SvgPicture.asset(
-            "assets/icon_done.svg",
-            color: const Color(0xFF4BB34B),
-          ),
-        );
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
@@ -557,6 +571,9 @@ class _FinishPageState extends State<FinishPage> {
           ),
           context: context,
         );
+        setState(() {
+          buttonActive = true;
+        });
         break;
       default:
         showSnackBar(
@@ -567,6 +584,9 @@ class _FinishPageState extends State<FinishPage> {
           ),
           context: context,
         );
+        setState(() {
+          buttonActive = true;
+        });
     }
   }
 }
