@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yaaccr100/components/api.dart';
 import 'package:yaaccr100/pages/question_page.dart';
 
 class StartPage extends StatefulWidget {
@@ -110,10 +111,13 @@ class _StartPageState extends State<StartPage> {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => Navigator.pushReplacement(
+                    onTap: () => Navigator.push(
                       context,
                       CupertinoPageRoute(
-                        builder: (BuildContext context) => const QuestionPage(),
+                        builder: (BuildContext context) => QuestionPage(
+                          currentQuestion: 0,
+                          questionList: MyApi().getQuestionList(),
+                        ),
                       ),
                     ),
                     borderRadius: BorderRadius.circular(100),
